@@ -20,13 +20,14 @@ var crouchHeight : float = 0.5
 var bHeadBonked : bool  = false
 var bSprinting : bool = false
 var bCrouching : bool = false
+var bWallRunnable : bool = false
+var wallNormal : Object
 
 onready var head = $Head
 onready var charCap = $CollisionShape
 onready var bonker = $HeadBonker
 onready var sprintTimer = $SprintTimer
-
-signal show_speed
+onready var WallRunTimer = $WallRunTimer
 
 func _ready():
 	pass
@@ -35,8 +36,8 @@ func _input(event):
 	# hide mouse cursor
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	# quit the game
-	if Input.is_action_just_pressed("ui_cancel"):
-		get_tree().quit(-1)
+	if Input.is_action_pressed("ui_cancel"):
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	# get mouse motion and rotate
 	if event is InputEventMouseMotion:
 		rotate_y(deg2rad(-event.relative.x * MouseSensitivity))
@@ -57,6 +58,14 @@ func _physics_process(delta):
 	var _blink = Input.is_action_just_pressed("blink")
 	var _crouch = Input.is_action_just_pressed("crouch")
 	var _sprint = Input.is_action_just_pressed("sprint")
+	# wall running
+	if bWallRunnable and _jump and _forward and is_on_wall():
+		wallNormal = get_slide_collision(0)
+		yield(get_tree().create_timer(0.2), "timeout")
+		fall.y = 0
+		direction = -wallNormal.normal * speed
+	# apply gravity
+	move_and_slide(direction + fall, Vector3.UP)
 	# check bonked
 	if bonker.is_colliding():
 		bHeadBonked = true
@@ -113,10 +122,14 @@ func _physics_process(delta):
 	# falling
 	if not is_on_floor():
 		fall.y -= Gravity * delta
+	else:
+		bWallRunnable = false
 	# jump once
 	if _jump and is_on_floor() and jumpNum == 0:
 		fall.y = Jump
 		jumpNum = 1
+		bWallRunnable = true
+		WallRunTimer.start()
 	# jump twice
 	if _jump and not is_on_floor() and jumpNum == 1:
 		fall.y = Jump
@@ -128,8 +141,9 @@ func _physics_process(delta):
 	direction = direction.normalized()
 	velocity = velocity.linear_interpolate(direction * speed, Acceleration * delta)
 	velocity = move_and_slide(velocity + fall, Vector3.UP, true)
-	# emit
-	emit_signal("show_speed", speed)
-	
+
 func _on_SprintTimer_timeout():
 	bSprinting = false
+
+func _on_WallRunTimer_timeout():
+	bWallRunnable = false
