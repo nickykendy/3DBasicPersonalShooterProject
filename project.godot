@@ -20,6 +20,15 @@ config/description="A bunch of basic structures of FPS and TPS game"
 run/main_scene="res://Levels/World.tscn"
 config/icon="res://icon.png"
 
+[display]
+
+window/size/width=1280
+window/size/height=800
+window/size/test_width=960
+window/size/test_height=600
+window/stretch/mode="viewport"
+window/stretch/aspect="keep"
+
 [input]
 
 move_forward={

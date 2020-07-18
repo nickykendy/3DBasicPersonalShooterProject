@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Scripts/FPSCharacter.gd" type="Script" id=1]
+[ext_resource path="res://Sprites/CrossHair.png" type="Texture" id=2]
 
 [sub_resource type="CapsuleMesh" id=1]
 radius = 0.75
@@ -34,6 +35,16 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.08, 0 )
 [node name="AimCast" type="RayCast" parent="Head/Camera"]
 enabled = true
 cast_to = Vector3( 0, 0, -1000 )
+
+[node name="CrossHair" type="TextureRect" parent="Head/Camera"]
+margin_left = 620.0
+margin_top = 380.0
+margin_right = 40.0
+margin_bottom = 40.0
+texture = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Gun" type="MeshInstance" parent="Head"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.32, -0.32, -0.4 )
