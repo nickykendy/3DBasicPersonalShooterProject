@@ -31,13 +31,20 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.08, 0 )
 
 [node name="Camera" type="Camera" parent="Head"]
 
+[node name="AimCast" type="RayCast" parent="Head/Camera"]
+enabled = true
+cast_to = Vector3( 0, 0, -1000 )
+
 [node name="Gun" type="MeshInstance" parent="Head"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.32, -0.32, -0.7 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.32, -0.32, -0.4 )
 mesh = SubResource( 3 )
 material/0 = null
 
 [node name="Muzzle" type="Spatial" parent="Head/Gun"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.579047 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.522251 )
+
+[node name="VirtualPoint" type="Spatial" parent="Head"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1000 )
 
 [node name="HeadBonker" type="RayCast" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.572589, 0 )

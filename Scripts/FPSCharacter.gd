@@ -27,7 +27,11 @@ onready var head = $Head
 onready var charCap = $CollisionShape
 onready var bonker = $HeadBonker
 onready var sprintTimer = $SprintTimer
-onready var WallRunTimer = $WallRunTimer
+onready var wallRunTimer = $WallRunTimer
+onready var aimCast = $Head/Camera/AimCast
+onready var muzzle = $Head/Gun/Muzzle
+onready var virtualPoint = $Head/VirtualPoint
+onready var bullet = preload("res://Scenes/Bullet.tscn")
 
 func _ready():
 	pass
@@ -58,6 +62,7 @@ func _physics_process(delta):
 	var _blink = Input.is_action_just_pressed("blink")
 	var _crouch = Input.is_action_just_pressed("crouch")
 	var _sprint = Input.is_action_just_pressed("sprint")
+	var _fire = Input.is_action_just_pressed("fire")
 	# wall running
 	if bWallRunnable and _jump and _forward and is_on_wall():
 		wallNormal = get_slide_collision(0)
@@ -66,6 +71,17 @@ func _physics_process(delta):
 		direction = -wallNormal.normal * speed
 	# apply gravity
 	move_and_slide(direction + fall, Vector3.UP)
+	# press fire to shoot
+	if _fire:
+		var targetPos = Vector3()
+		if aimCast.is_colliding():
+			targetPos = aimCast.get_collision_point()
+		else:
+			targetPos = virtualPoint.global_transform.origin
+		var b = bullet.instance()
+		muzzle.add_child(b)
+		b.look_at(targetPos, Vector3.UP)
+		b.shoot()
 	# check bonked
 	if bonker.is_colliding():
 		bHeadBonked = true
@@ -129,7 +145,7 @@ func _physics_process(delta):
 		fall.y = Jump
 		jumpNum = 1
 		bWallRunnable = true
-		WallRunTimer.start()
+		wallRunTimer.start()
 	# jump twice
 	if _jump and not is_on_floor() and jumpNum == 1:
 		fall.y = Jump
